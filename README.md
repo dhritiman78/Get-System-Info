@@ -24,3 +24,9 @@ iex (iwr -UseBasicParsing https://raw.githubusercontent.com/dhritiman78/Get-Syst
 bash <(curl -s https://raw.githubusercontent.com/dhritiman78/Get-System-Info/main/fetchDetails.sh)
 ```
 This will automatically download and run the Bash script to collect system info and upload it.
+
+## 🔹 View Collected Data
+
+You can view all uploaded device details in the static HTML page:
+
+👉 [View Device Info](https://dhritiman78.github.io/Get-System-Info/)
