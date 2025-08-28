@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Reports (Direct Fetch)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f9fafb; font-family: "Segoe UI", sans-serif; }
+    .card { border-radius: 15px; box-shadow: 0px 4px 12px rgba(0,0,0,0.08); }
+    .card-header { background: linear-gradient(135deg, #ff6a00, #ee0979); color: white; font-weight: bold; }
+    .timestamp { font-size: 0.85rem; color: gray; }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1 class="text-center mb-4">💻 System Reports (Direct REST Fetch)</h1>
+    <div id="reports" class="row g-4 text-center">
+      <p class="text-muted">Loading reports...</p>
+    </div>
+  </div>
+
+  <script>
+    async function fetchReports() {
+      const response = await fetch("https://test-ca5a5-default-rtdb.asia-southeast1.firebasedatabase.app/systemReports.json");
+      const data = await response.json();
+      const reportsContainer = document.getElementById("reports");
+      reportsContainer.innerHTML = "";
+
+      if (data) {
+        const sortedKeys = Object.keys(data).sort((a, b) => {
+          return new Date(data[b].timestamp) - new Date(data[a].timestamp);
+        });
+
+        sortedKeys.forEach(key => {
+          const report = data[key];
+          const card = `
+            <div class="col-md-6 col-lg-4">
+              <div class="card">
+                <div class="card-header">${report.hostname || "Unknown"} (${report.user || "N/A"})</div>
+                <div class="card-body text-start">
+                  <p><strong>OS:</strong> ${report.os || "-"}</p>
+                  <p><strong>Kernel:</strong> ${report.kernel || "-"}</p>
+                  <p><strong>Arch:</strong> ${report.architecture || "-"}</p>
+                  <p><strong>CPU:</strong> ${report.cpu || "-"} (${report.cores || "?"} cores)</p>
+                  <p><strong>Memory:</strong> ${report.memory?.total || "-"} | Used: ${report.memory?.used || "-"}</p>
+                  <p><strong>Disk:</strong> ${report.disk || "-"}</p>
+                  <p><strong>IP:</strong> ${report.ip || "-"}</p>
+                  <p><strong>Uptime:</strong> ${report.uptime || "-"}</p>
+                  <p class="timestamp">⏱ ${report.timestamp || "-"}</p>
+                </div>
+              </div>
+            </div>`;
+          reportsContainer.innerHTML += card;
+        });
+      } else {
+        reportsContainer.innerHTML = "<p class='text-muted'>No reports found.</p>";
+      }
+    }
+
+    // Initial load
+    fetchReports();
+
+    // Optional: refresh every 5 seconds to simulate "realtime"
+    setInterval(fetchReports, 5000);
+  </script>
+</body>
+</html>
+
